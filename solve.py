@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -64,12 +66,7 @@ def merge_img(queryImg, trainImg):
     return result
 
 
-if __name__ == "__main__":
-    img1 = cv2.imread("dataset/3/1.jpeg")
-    img2 = cv2.imread("dataset/3/2.jpeg")
-
-    merged_img = merge_img(img1, img2)
-
+def display_result(img1, img2, img12):
     plt.figure(figsize=(25, 9))
     plt.subplot(2, 2, 1)
     plt.imshow(img1)
@@ -82,8 +79,24 @@ if __name__ == "__main__":
     plt.axis("off")
 
     plt.subplot(2, 1, 2)
-    plt.imshow(merged_img)
+    plt.imshow(img12)
     plt.title("Combined image", fontsize=16)
     plt.axis("off")
 
     plt.show()
+
+
+if __name__ == "__main__":
+    IMG_DIR = "dataset/3"
+    filepaths = sorted(Path(IMG_DIR).glob("*.jpeg"))
+
+    images = [cv2.imread(str(path)) for path in filepaths]
+
+    for i in range(1, len(images)):
+        img = merge_img(images[i - 1], images[i])
+        display_result(images[i - 1], images[i], img)
+
+    # img1 = cv2.imread("dataset/3/0.jpeg")
+    # img2 = cv2.imread("dataset/3/1.jpeg")
+    # img12 = merge_img(img1, img2)
+    # display_result(img1, img2, img12)
