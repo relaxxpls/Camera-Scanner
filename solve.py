@@ -200,12 +200,41 @@ def mainIndividual(images):
         display_result(images[i - 1], images[i], image_merged, warped)
 
 
+def mainCombined(images):
+    image_last = images[0]
+
+    for i in range(1, len(images)):
+        image_merged = merge_img(image_last, images[i])
+
+        points = get_boundary_points(image_merged)
+        print(f"Simplified contour has {len(points)} points")
+
+        if len(points) < 4 or len(points) > 6:
+            print(f"{i}th image has {len(points)} points")
+            break
+        elif len(points) == 4:
+            warped = four_point_transform(image_merged, points)
+        elif len(points) == 5:
+            warped = four_point_transform(
+                image_merged, [points[i][0] for i in [0, 1, 3, 4]]
+            )
+        elif len(points) == 6:
+            warped = four_point_transform(
+                image_merged, [points[i][0] for i in [0, 1, 3, 5]]
+            )
+
+        display_result(image_last, images[i], image_merged, warped)
+        image_last = warped
+
+
 if __name__ == "__main__":
     IMG_DIR = "dataset/3"
     filepaths = sorted(Path(IMG_DIR).glob("*.jpeg"))
 
     images = [cv2.imread(str(path)) for path in filepaths]
+
     mainIndividual(images)
+    # mainCombined(images)
 
     # img1 = cv2.imread("dataset/3/0.jpeg")
     # img2 = cv2.imread("dataset/3/1.jpeg")
